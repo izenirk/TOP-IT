@@ -1,4 +1,4 @@
-import { reactive, computed } from 'vue'
+import { reactive } from 'vue'
 
 class ScheduleStore {
     constructor() {
@@ -18,11 +18,16 @@ class ScheduleStore {
         this.loadFromLocalStorage();
     }
     
+    get employees() {
+        return this.state.employees;
+    }
+    
     loadFromLocalStorage() {
         const saved = localStorage.getItem('employees');
         if (saved) {
             this.state.employees = JSON.parse(saved);
         }
+        // Тестовые данные не загружаются
     }
     
     saveToLocalStorage() {
@@ -30,6 +35,9 @@ class ScheduleStore {
     }
     
     addShift(employeeName, alliance, group, shift) {
+        // Генерируем id для новой смены
+        shift.id = Date.now();
+        
         let existingEmployee = this.state.employees.find(emp => 
             emp.name === employeeName && emp.alliance === alliance && emp.group === group
         );
@@ -37,7 +45,12 @@ class ScheduleStore {
         if (existingEmployee) {
             existingEmployee.shifts.push(shift);
         } else {
+            // Генерируем новый id для сотрудника
+            const newId = this.state.employees.length > 0 
+                ? Math.max(...this.state.employees.map(e => e.id || 0)) + 1 
+                : 1;
             this.state.employees.push({
+                id: newId,
                 name: employeeName,
                 alliance,
                 group,
@@ -101,10 +114,6 @@ class ScheduleStore {
     
     clearError() {
         this.state.errorMessage = '';
-    }
-    
-    get employees() {
-        return this.state.employees;
     }
     
     get groupedEmployees() {

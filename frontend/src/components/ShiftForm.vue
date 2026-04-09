@@ -1,9 +1,25 @@
 <template>
   <form @submit.prevent="handleSubmit" class="shift-form">
+    <div class="form-header">
+      <h3>➕ Добавление смены</h3>
+      <div class="form-subtitle" v-if="employee">
+        для {{ employee.name }}
+      </div>
+    </div>
+
     <!-- Выбор даты -->
     <div class="form-group">
-      <label for="shiftDate">Выберите дату:</label>
+      <label for="shiftDate">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+          <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+          <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+          <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Дата смены
+      </label>
       <select id="shiftDate" v-model="form.date" required @change="checkConsecutive">
+        <option value="" disabled>Выберите дату</option>
         <option v-for="date in dateOptions" :key="date.value" :value="date.value">
           {{ date.label }}
         </option>
@@ -12,15 +28,24 @@
 
     <!-- Предупреждение о подряд идущих сменах -->
     <div v-if="consecutiveWarning" class="alert" :class="warningClass">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 8V12M12 16H12.01M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
       {{ consecutiveWarning }}
     </div>
 
     <!-- Начало смены -->
     <div class="form-group">
-      <label for="startTime">Начало смены:</label>
+      <label for="startTime">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Начало смены
+      </label>
       <select id="startTime" v-model="form.startTime" required @change="onStartTimeChange">
-        <option value="">-- Выберите время --</option>
-        <option value="Выходной">Выходной</option>
+        <option value="" disabled>-- Выберите время --</option>
+        <option value="Выходной">🌙 Выходной</option>
         <option v-for="time in startTimeOptions" :key="time" :value="time">
           {{ time }}
         </option>
@@ -28,22 +53,33 @@
     </div>
 
     <!-- Конец смены -->
-    <div class="form-group">
-      <label for="endTime">Конец смены:</label>
+    <div class="form-group" :class="{ 'fade-in': isEndTimeEnabled }">
+      <label for="endTime">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Конец смены
+      </label>
       <select
         id="endTime"
         v-model="form.endTime"
         :disabled="!isEndTimeEnabled"
         required
       >
-        <option value="">-- Выберите время --</option>
+        <option value="" disabled>-- Выберите время --</option>
         <option v-for="time in endTimeOptions" :key="time.value" :value="time.value">
           {{ time.label }}
         </option>
       </select>
     </div>
 
-    <button type="submit" class="submit-btn">Добавить график</button>
+    <button type="submit" class="submit-btn">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Добавить график
+    </button>
   </form>
 </template>
 
@@ -198,10 +234,10 @@ function checkConsecutive() {
   }
 
   if (maxConsecutive > 6) {
-    consecutiveWarning.value = `⚠️ Предупреждение: При добавлении этой смены будет ${maxConsecutive} смен подряд! Максимально допустимо - 6 смен.`
+    consecutiveWarning.value = `При добавлении этой смены будет ${maxConsecutive} смен подряд! Максимально допустимо - 6 смен.`
     warningClass.value = 'warning'
   } else if (maxConsecutive > 4) {
-    consecutiveWarning.value = `⚠️ Внимание: ${maxConsecutive} смен подряд. Осталось ${6 - maxConsecutive} до лимита.`
+    consecutiveWarning.value = `${maxConsecutive} смен подряд. Осталось ${6 - maxConsecutive} до лимита.`
     warningClass.value = 'alert-info'
   } else {
     consecutiveWarning.value = ''
@@ -244,52 +280,238 @@ function handleSubmit() {
 </script>
 
 <style scoped>
+/* CSS Variables для светлой и тёмной темы */
 .shift-form {
-  padding: 1rem;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  max-width: 400px;
+  --form-bg: #ffffff;
+  --form-border: #e2e8f0;
+  --form-text: #0f172a;
+  --form-label: #475569;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-focus: #4f46e5;
+  --alert-bg: #fef3c7;
+  --alert-text: #92400e;
+  --warning-bg: #fee2e2;
+  --warning-text: #dc2626;
+  --info-bg: #dbeafe;
+  --info-text: #1e40af;
+  --submit-bg: #10b981;
+  --submit-hover: #059669;
+  --header-border: #f1f5f9;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
-.form-group {
-  margin-bottom: 1rem;
+
+@media (prefers-color-scheme: dark) {
+  .shift-form {
+    --form-bg: #1e293b;
+    --form-border: #334155;
+    --form-text: #f1f5f9;
+    --form-label: #94a3b8;
+    --input-bg: #334155;
+    --input-border: #475569;
+    --input-focus: #818cf8;
+    --alert-bg: #78350f;
+    --alert-text: #fde68a;
+    --warning-bg: #7f1d1d;
+    --warning-text: #fca5a5;
+    --info-bg: #1e3a5f;
+    --info-text: #93c5fd;
+    --submit-bg: #059669;
+    --submit-hover: #10b981;
+    --header-border: #334155;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
 }
-label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-weight: bold;
-}
-select {
+
+.shift-form {
+  background-color: var(--form-bg);
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid var(--form-border);
+  box-shadow: var(--shadow);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  transition: all 0.2s ease;
+  max-width: 480px;
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
 }
+
+/* Шапка */
+.form-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--header-border);
+}
+
+.form-header h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--form-text);
+  letter-spacing: -0.01em;
+}
+
+.form-subtitle {
+  font-size: 0.8rem;
+  color: var(--form-label);
+  margin-top: 4px;
+}
+
+/* Группа полей */
+.form-group {
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.form-group.fade-in {
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--form-label);
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+}
+
+.form-group label svg {
+  width: 18px;
+  height: 18px;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--input-border);
+  border-radius: 16px;
+  font-size: 0.95rem;
+  background-color: var(--input-bg);
+  color: var(--form-text);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.form-group select:disabled {
+  background-color: var(--form-border);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Алерты */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.alert svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.alert.alert-info {
+  background-color: var(--info-bg);
+  color: var(--info-text);
+  border-left: 3px solid #3b82f6;
+}
+
+.alert.warning {
+  background-color: var(--warning-bg);
+  color: var(--warning-text);
+  border-left: 3px solid #ef4444;
+}
+
+/* Кнопка отправки */
 .submit-btn {
-  background-color: #4caf50;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--submit-bg);
   color: white;
-  padding: 0.75rem 1.5rem;
+  padding: 12px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 40px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  margin-top: 8px;
 }
+
+.submit-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
 .submit-btn:hover {
-  background-color: #45a049;
+  background-color: var(--submit-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
 }
-.alert {
-  padding: 0.75rem;
-  margin: 1rem 0;
-  border-radius: 4px;
+
+.submit-btn:active {
+  transform: translateY(0);
 }
-.warning {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeeba;
-}
-.alert-info {
-  background-color: #d1ecf1;
-  color: #0c5460;
-  border: 1px solid #bee5eb;
+
+/* Адаптивность */
+@media (max-width: 520px) {
+  .shift-form {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  
+  .form-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  .form-group select {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .submit-btn {
+    padding: 11px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .alert {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
 }
 </style>
