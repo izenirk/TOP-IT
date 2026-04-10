@@ -63,8 +63,7 @@ export default {
     return {
       currentView: this.initialView,
       currentDate: new Date(this.initialDate),
-      selectedEmployeeId: '',
-      testEmployees: []
+      selectedEmployeeId: ''
     }
   },
   
@@ -78,16 +77,9 @@ export default {
       return views[this.currentView]
     },
     
-    activeEmployees() {
-      if (this.employees && this.employees.length > 0) {
-        return this.employees
-      }
-      return this.testEmployees
-    },
-    
     filteredEmployees() {
-      if (!this.selectedEmployeeId) return this.activeEmployees
-      return this.activeEmployees.filter(emp => emp.id == this.selectedEmployeeId)
+      if (!this.selectedEmployeeId) return this.employees
+      return this.employees.filter(emp => emp.id == this.selectedEmployeeId)
     },
     
     filteredShifts() {
@@ -101,7 +93,7 @@ export default {
               employeeName: emp.name,
               alliance: emp.alliance,
               group: emp.group,
-              id: `${emp.id}_${shift.date}_${Date.now()}`
+              id: `${emp.id}_${shift.date}_${Date.now()}_${Math.random()}`
             })
           })
         }
@@ -130,129 +122,12 @@ export default {
     }
   },
   
-  mounted() {
-    this.loadTestData()
-  },
-  
   methods: {
-    loadTestData() {
-      this.testEmployees = [
-        {
-          id: 1,
-          name: 'Сизый Александр Петрович',
-          alliance: 'Пупкина',
-          group: 'Группа Сизых',
-          shifts: [
-            { date: '2026-04-01', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-02', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-03', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-04', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-05', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-06', startTime: '14:00', endTime: '23:00' },
-            { date: '2026-04-07', startTime: '14:00', endTime: '23:00' },
-            { date: '2026-04-08', startTime: '14:00', endTime: '23:00' },
-            { date: '2026-04-09', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-10', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-11', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-12', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-13', startTime: '22:00', endTime: '06:00' },
-            { date: '2026-04-14', startTime: '22:00', endTime: '06:00' },
-            { date: '2026-04-15', startTime: '22:00', endTime: '06:00' }
-          ]
-        },
-        {
-          id: 2,
-          name: 'Сизый Мария Ивановна',
-          alliance: 'Пупкина',
-          group: 'Группа Сизых',
-          shifts: [
-            { date: '2026-04-01', startTime: '10:00', endTime: '19:00' },
-            { date: '2026-04-02', startTime: '10:00', endTime: '19:00' },
-            { date: '2026-04-03', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-04', startTime: '10:00', endTime: '19:00' },
-            { date: '2026-04-05', startTime: '10:00', endTime: '19:00' },
-            { date: '2026-04-06', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-07', startTime: '12:00', endTime: '21:00' },
-            { date: '2026-04-08', startTime: '12:00', endTime: '21:00' },
-            { date: '2026-04-09', startTime: '12:00', endTime: '21:00' },
-            { date: '2026-04-10', startTime: '10:00', endTime: '19:00' },
-            { date: '2026-04-11', startTime: '10:00', endTime: '19:00' },
-            { date: '2026-04-12', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-13', startTime: '10:00', endTime: '19:00' }
-          ]
-        },
-        {
-          id: 3,
-          name: 'Васильков Иван Сергеевич',
-          alliance: 'Пупкина',
-          group: 'Группа Василькова',
-          shifts: [
-            { date: '2026-04-01', startTime: '08:00', endTime: '17:00' },
-            { date: '2026-04-02', startTime: '08:00', endTime: '17:00' },
-            { date: '2026-04-03', startTime: '08:00', endTime: '17:00' },
-            { date: '2026-04-04', startTime: '08:00', endTime: '17:00' },
-            { date: '2026-04-05', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-06', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-07', startTime: '16:00', endTime: '01:00' },
-            { date: '2026-04-08', startTime: '16:00', endTime: '01:00' },
-            { date: '2026-04-09', startTime: '16:00', endTime: '01:00' },
-            { date: '2026-04-10', startTime: '16:00', endTime: '01:00' },
-            { date: '2026-04-11', startTime: '08:00', endTime: '17:00' },
-            { date: '2026-04-12', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-13', startTime: 'Выходной', endTime: '' }
-          ]
-        },
-        {
-          id: 4,
-          name: 'Кузнецов Виктор Михайлович',
-          alliance: 'Тумбочкина',
-          group: 'Группа Кузнецовых',
-          shifts: [
-            { date: '2026-04-01', startTime: '07:00', endTime: '16:00' },
-            { date: '2026-04-02', startTime: '07:00', endTime: '16:00' },
-            { date: '2026-04-03', startTime: '07:00', endTime: '16:00' },
-            { date: '2026-04-04', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-05', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-06', startTime: '15:00', endTime: '00:00' },
-            { date: '2026-04-07', startTime: '15:00', endTime: '00:00' },
-            { date: '2026-04-08', startTime: '15:00', endTime: '00:00' },
-            { date: '2026-04-09', startTime: '07:00', endTime: '16:00' },
-            { date: '2026-04-10', startTime: '07:00', endTime: '16:00' },
-            { date: '2026-04-11', startTime: '07:00', endTime: '16:00' },
-            { date: '2026-04-12', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-13', startTime: 'Выходной', endTime: '' }
-          ]
-        },
-        {
-          id: 5,
-          name: 'Морозовых Андрей Владимирович',
-          alliance: 'Петровича',
-          group: 'Группа Морозовых',
-          shifts: [
-            { date: '2026-04-01', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-02', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-03', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-04', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-05', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-06', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-07', startTime: '14:00', endTime: '23:00' },
-            { date: '2026-04-08', startTime: '14:00', endTime: '23:00' },
-            { date: '2026-04-09', startTime: '14:00', endTime: '23:00' },
-            { date: '2026-04-10', startTime: 'Выходной', endTime: '' },
-            { date: '2026-04-11', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-12', startTime: '09:00', endTime: '18:00' },
-            { date: '2026-04-13', startTime: '09:00', endTime: '18:00' }
-          ]
-        }
-      ]
-    },
-    
     setView(view) {
       this.currentView = view
       this.$emit('view-change', view)
     },
     
-    // НОВЫЙ МЕТОД - универсальная навигация
     navigatePeriod(direction, view) {
       const newDate = new Date(this.currentDate);
       
@@ -321,6 +196,7 @@ export default {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   border-radius: 16px;
   padding: 24px;
+  margin-top: 30px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -338,7 +214,6 @@ export default {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .schedule-visualization {
     padding: 16px;
@@ -350,7 +225,6 @@ export default {
   }
 }
 
-/* Стили для скроллбара */
 .visualization-content::-webkit-scrollbar {
   width: 8px;
   height: 8px;

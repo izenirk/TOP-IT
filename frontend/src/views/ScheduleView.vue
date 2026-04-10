@@ -33,7 +33,21 @@
             <div class="main-content">
                 <SelectionForm v-model="selectedEmployeeData" />
                 <ScheduleForm :selected-employee="selectedEmployeeData" />
-                <EmployeesTable @show-details="showEmployeeDetails" />
+                
+                <!-- Таблица с данными -->
+                <EmployeesTable 
+                    @show-details="handleShowDetails"
+                    @data-changed="handleDataChanged"
+                />
+                
+                <!-- Календарь на основе данных из таблицы -->
+                <ScheduleVisualization 
+                    :employees="employees"
+                    :initial-view="'week'"
+                    :initial-date="new Date()"
+                    @view-change="handleViewChange"
+                    @period-change="handlePeriodChange"
+                />
             </div>
             
             <div class="sidebar">
@@ -60,6 +74,7 @@
 import SelectionForm from '../components/SelectionForm.vue'
 import ScheduleForm from '../components/ScheduleForm.vue'
 import EmployeesTable from '../components/EmployeesTable.vue'
+import ScheduleVisualization from '../components/Calendar/ScheduleVisualization.vue'
 import SummaryPanel from '../components/SummaryPanel.vue'
 import EmployeeDetails from '../components/EmployeeDetails.vue'
 import DeleteModal from '../components/DeleteModal.vue'
@@ -71,6 +86,7 @@ export default {
         SelectionForm,
         ScheduleForm,
         EmployeesTable,
+        ScheduleVisualization,
         SummaryPanel,
         EmployeeDetails,
         DeleteModal
@@ -80,7 +96,8 @@ export default {
             selectedEmployeeData: null,
             detailsVisible: false,
             currentEmployeeIndex: null,
-            username: ''
+            username: '',
+            employees: []
         }
     },
     computed: {
@@ -99,16 +116,77 @@ export default {
     },
     mounted() {
         // Проверяем авторизацию
-        const isLoggedIn = localStorage.getItem('isLoggedIn')
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
         if (!isLoggedIn) {
-            this.$router.push('/')
+            this.$router.push('/');
         }
-        this.username = localStorage.getItem('username') || 'Пользователь'
+        this.username = localStorage.getItem('username') || 'Пользователь';
+        
+        // Загружаем данные
+        this.loadEmployees();
+        
+        // Подписываемся на изменения в store
+        this.watchStoreChanges();
     },
     methods: {
+<<<<<<< Updated upstream
         getInitials(name) {
             if (!name) return '👤'
             return name.charAt(0).toUpperCase()
+=======
+        loadEmployees() {
+            this.employees = [...scheduleStore.employees];
+        },
+        
+        watchStoreChanges() {
+            // Создаем наблюдателя за изменениями в store
+            const updateEmployees = () => {
+                this.employees = [...scheduleStore.employees];
+            };
+            
+            // Сохраняем оригинальные методы
+            const originalAddShift = scheduleStore.addShift;
+            const originalDeleteShift = scheduleStore.deleteShift;
+            const originalDeleteEmployee = scheduleStore.deleteEmployee;
+            
+            // Переопределяем методы с уведомлением об изменениях
+            scheduleStore.addShift = (...args) => {
+                const result = originalAddShift.apply(scheduleStore, args);
+                updateEmployees();
+                return result;
+            };
+            
+            scheduleStore.deleteShift = (...args) => {
+                const result = originalDeleteShift.apply(scheduleStore, args);
+                updateEmployees();
+                return result;
+            };
+            
+            scheduleStore.deleteEmployee = (...args) => {
+                const result = originalDeleteEmployee.apply(scheduleStore, args);
+                updateEmployees();
+                return result;
+            };
+            
+            // Начальная загрузка
+            updateEmployees();
+        },
+        
+        handleShowDetails(index) {
+            this.showEmployeeDetails(index);
+        },
+        
+        handleDataChanged() {
+            this.loadEmployees();
+        },
+        
+        handleViewChange(view) {
+            console.log('View changed to:', view);
+        },
+        
+        handlePeriodChange(date) {
+            console.log('Period changed to:', date);
+>>>>>>> Stashed changes
         },
         
         showEmployeeDetails(index) {
@@ -126,9 +204,9 @@ export default {
         },
         
         logout() {
-            localStorage.removeItem('isLoggedIn')
-            localStorage.removeItem('username')
-            this.$router.push('/')
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            this.$router.push('/');
         }
     }
 }
@@ -268,6 +346,7 @@ export default {
     border: none;
     border-radius: 40px;
     cursor: pointer;
+<<<<<<< Updated upstream
     font-size: 0.85rem;
     font-weight: 500;
     font-family: inherit;
@@ -277,6 +356,9 @@ export default {
 .logout-btn svg {
     width: 18px;
     height: 18px;
+=======
+    transition: background-color 0.3s;
+>>>>>>> Stashed changes
 }
 
 .logout-btn:hover {

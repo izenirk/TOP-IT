@@ -1,9 +1,56 @@
 <template>
     <div class="employees-table">
+<<<<<<< Updated upstream
         <div class="table-header">
             <h2>Список графиков</h2>
             <div class="stats-badge" v-if="employeesList.length > 0">
                 {{ employeesList.length }} сотрудников
+=======
+        <h2>Список графиков</h2>
+        <div v-if="employeesList.length > 0">
+            <div v-for="alliance in uniqueAlliances" :key="alliance" class="alliance-section">
+                <table>
+                    <caption><strong>{{ alliance }}</strong></caption>
+                    <thead>
+                        <tr>
+                            <th>Группа</th>
+                            <th>Сотрудник</th>
+                            <th>Смены</th>
+                            <th>Макс. подряд</th>
+                            <th>% в будни</th>
+                            <th>% в выходные</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template v-for="group in getGroupsByAlliance(alliance)" :key="group">
+                            <tr class="group-separator">
+                                <td colspan="7"><strong>{{ group }}</strong></td>
+                            </tr>
+                            <tr v-for="employee in getEmployeesByGroup(alliance, group)" :key="employee.originalIndex">
+                                <td>{{ employee.group }}</td>
+                                <td>{{ employee.name }}</td>
+                                <td class="shifts-cell">
+                                    {{ formatShifts(employee.shifts) }}
+                                </td>
+                                <td :class="{ warning: employee.maxConsecutive > 6 }">
+                                    {{ employee.maxConsecutive }}
+                                </td>
+                                <td>{{ employee.metrics.weekdayPercentage }}%</td>
+                                <td>{{ employee.metrics.weekendPercentage }}%</td>
+                                <td class="actions-cell">
+                                    <button class="edit-btn" @click="showDetails(employee.originalIndex)" title="Редактировать">
+                                        ✏️
+                                    </button>
+                                    <button class="delete-btn" @click="confirmDeleteEmployee(employee.originalIndex, employee.name)" title="Удалить сотрудника">
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+>>>>>>> Stashed changes
             </div>
         </div>
         
@@ -91,12 +138,17 @@
         </div>
         
         <div v-else class="no-data">
+<<<<<<< Updated upstream
             <svg viewBox="0 0 24 24" fill="none">
                 <path d="M9 12H15M12 9V15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
             <p>Нет внесенных графиков</p>
             <span>Добавьте первого сотрудника</span>
+=======
+            <p>Нет внесенных графиков.</p>
+            <button @click="loadTestData" class="load-test-btn">Загрузить тестовые данные</button>
+>>>>>>> Stashed changes
         </div>
     </div>
 </template>
@@ -107,6 +159,7 @@ import { scheduleStore } from '../store/scheduleStore.js'
 
 export default {
     name: 'EmployeesTable',
+    
     computed: {
         employeesList() {
             const list = [];
@@ -128,6 +181,14 @@ export default {
             return [...new Set(this.employeesList.map(emp => emp.alliance))];
         }
     },
+    
+    mounted() {
+        // Если данных нет, загружаем тестовые
+        if (scheduleStore.employees.length === 0) {
+            scheduleStore.loadTestData()
+        }
+    },
+    
     methods: {
         getInitials(name) {
             if (!name) return '?';
@@ -175,8 +236,16 @@ export default {
         confirmDeleteEmployee(index, name) {
             scheduleStore.showModal(
                 `Удалить сотрудника ${name} и все его смены?`,
-                () => scheduleStore.deleteEmployee(index)
+                () => {
+                    scheduleStore.deleteEmployee(index)
+                    this.$emit('data-changed')
+                }
             );
+        },
+        
+        loadTestData() {
+            scheduleStore.loadTestData()
+            this.$emit('data-changed')
         }
     }
 }
@@ -492,8 +561,14 @@ td {
     text-align: center;
 }
 
+<<<<<<< Updated upstream
 .action-btn {
     background: none;
+=======
+.edit-btn, .delete-btn, .load-test-btn {
+    padding: 5px 10px;
+    margin: 0 2px;
+>>>>>>> Stashed changes
     border: none;
     cursor: pointer;
     padding: 8px;
@@ -528,10 +603,29 @@ td {
     transform: scale(1.05);
 }
 
+<<<<<<< Updated upstream
 @media (prefers-color-scheme: dark) {
     .delete-btn:hover {
         background-color: rgba(249, 115, 22, 0.15);
     }
+=======
+.load-test-btn {
+    background-color: #2196F3;
+    color: white;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.load-test-btn:hover {
+    background-color: #0b7dda;
+    transform: translateY(-1px);
+}
+
+.warning {
+    color: #ff9800;
+    font-weight: bold;
+>>>>>>> Stashed changes
 }
 
 /* Пустое состояние */
