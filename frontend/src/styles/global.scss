@@ -1,7 +1,7 @@
 /* global.scss - Main global styles */
 
-@import './null.scss';
-@import './theme.scss';
+@use './null.scss' as *;
+@use './theme.scss' as *;
 
 // Additional global styles
 #app {
