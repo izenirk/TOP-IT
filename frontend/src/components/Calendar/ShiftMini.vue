@@ -40,11 +40,10 @@ export default {
     isLongShift() {
       if (this.shift.startTime === 'Выходной') return false
       const duration = this.getShiftDurationInMinutes()
-      return duration > 480 // Больше 8 часов
+      return duration > 480
     },
     
     hasMultipleShifts() {
-      // Проверяем, есть ли несколько смен в этом часе
       return this.$parent?.$children?.filter(child => 
         child !== this && child.shift?.date === this.shift.date
       ).length > 0
@@ -98,75 +97,116 @@ export default {
 </script>
 
 <style scoped>
+/* CSS Variables для светлой и тёмной темы */
+.shift-mini {
+  --shift-regular-bg-start: #10b981;
+  --shift-regular-bg-end: #059669;
+  --shift-night-bg-start: #6366f1;
+  --shift-night-bg-end: #4f46e5;
+  --shift-long-bg-start: #f59e0b;
+  --shift-long-bg-end: #d97706;
+  --shift-off-bg-start: #94a3b8;
+  --shift-off-bg-end: #64748b;
+  --shift-text: #ffffff;
+  --shift-shadow: rgba(0, 0, 0, 0.1);
+  --tooltip-bg: #1e293b;
+  --tooltip-text: #f1f5f9;
+}
+
+@media (prefers-color-scheme: dark) {
+  .shift-mini {
+    --shift-regular-bg-start: #059669;
+    --shift-regular-bg-end: #047857;
+    --shift-night-bg-start: #4f46e5;
+    --shift-night-bg-end: #4338ca;
+    --shift-long-bg-start: #d97706;
+    --shift-long-bg-end: #b45309;
+    --shift-off-bg-start: #64748b;
+    --shift-off-bg-end: #475569;
+    --shift-text: #f8fafc;
+    --shift-shadow: rgba(0, 0, 0, 0.3);
+    --tooltip-bg: #0f172a;
+    --tooltip-text: #e2e8f0;
+  }
+}
+
 .shift-mini {
   position: absolute;
   top: 2px;
   left: 2px;
   right: 2px;
-  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--shift-regular-bg-start) 0%, var(--shift-regular-bg-end) 100%);
+  color: var(--shift-text);
   font-size: 10px;
   font-weight: 600;
   padding: 3px 6px;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px var(--shift-shadow);
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
+  backdrop-filter: blur(0px);
 }
 
-/* Ночная смена */
 .shift-mini.night-shift {
-  background: linear-gradient(135deg, #3f51b5 0%, #303f9f 100%);
-  box-shadow: 0 1px 2px rgba(63, 81, 181, 0.3);
+  background: linear-gradient(135deg, var(--shift-night-bg-start) 0%, var(--shift-night-bg-end) 100%);
+  box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
 }
 
-/* Длинная смена */
 .shift-mini.long-shift {
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-  box-shadow: 0 1px 2px rgba(255, 152, 0, 0.3);
+  background: linear-gradient(135deg, var(--shift-long-bg-start) 0%, var(--shift-long-bg-end) 100%);
+  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.3);
 }
 
-/* Выходной */
 .shift-mini.day-off {
-  background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
-  opacity: 0.7;
+  background: linear-gradient(135deg, var(--shift-off-bg-start) 0%, var(--shift-off-bg-end) 100%);
+  opacity: 0.75;
   font-style: italic;
 }
 
-/* Инициалы */
 .shift-initials {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
-/* Точка для нескольких смен */
 .shift-dot {
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.8);
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  animation: pulseDot 1.5s ease infinite;
 }
 
-/* Эффекты при наведении */
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
 .shift-mini:hover {
-  transform: translateY(-1px) scale(1.02);
+  transform: translateY(-2px) scale(1.02);
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   filter: brightness(1.05);
 }
 
@@ -175,53 +215,42 @@ export default {
   transition: transform 0.05s;
 }
 
-/* Анимация появления */
 .shift-mini {
-  animation: fadeInUp 0.2s ease;
+  animation: slideInRight 0.2s ease;
 }
 
-@keyframes fadeInUp {
+@keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateX(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
-/* Разные размеры для компактного режима */
-.shift-mini[class*="compact"] {
-  padding: 2px 4px;
-  font-size: 8px;
-}
-
-/* Инструменты для отображения статуса */
 .shift-mini::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 2px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px 0 0 2px;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 3px 0 0 3px;
 }
 
-/* Подсветка для активной смены */
 .shift-mini:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
 }
 
-/* Множественные смены в одном часе */
 .shift-mini:not(:first-child) {
   top: auto;
   margin-top: 2px;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .shift-mini {
     padding: 2px 4px;
@@ -244,23 +273,24 @@ export default {
   }
 }
 
-/* Тултип при наведении (кастомный) */
 .shift-mini:hover::after {
   content: attr(title);
   position: absolute;
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: #2c3e50;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 6px 10px;
+  border-radius: 8px;
   font-size: 10px;
   white-space: nowrap;
   z-index: 1000;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   pointer-events: none;
   font-weight: normal;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  letter-spacing: normal;
 }
 
 .shift-mini:hover::before {
@@ -269,58 +299,68 @@ export default {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 4px;
+  border-width: 5px;
   border-style: solid;
-  border-color: #2c3e50 transparent transparent transparent;
+  border-color: var(--tooltip-bg) transparent transparent transparent;
   margin-bottom: -4px;
   pointer-events: none;
 }
 
-/* Индикатор загрузки для смены */
 .shift-mini.loading {
-  animation: pulse 1s ease infinite;
+  animation: shimmer 1s ease infinite;
 }
 
-@keyframes pulse {
+@keyframes shimmer {
   0%, 100% {
-    opacity: 1;
+    opacity: 0.7;
   }
   50% {
-    opacity: 0.6;
+    opacity: 0.4;
   }
 }
 
-/* Стили для печати */
 @media print {
   .shift-mini {
-    background: #f0f0f0 !important;
-    color: black !important;
-    border: 1px solid #ccc;
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1;
     print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    box-shadow: none;
   }
   
-  .shift-mini::after {
+  .shift-mini::after,
+  .shift-mini::before {
     display: none;
   }
 }
 
-/* Эффект для первого элемента в группе */
 .shift-mini:first-of-type {
   margin-top: 0;
 }
 
-/* Индикатор, что смена началась */
 .shift-mini.active {
-  animation: glow 1s ease infinite;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+  animation: glowPulse 1.5s ease infinite;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
 }
 
-@keyframes glow {
+@keyframes glowPulse {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.4);
   }
   50% {
-    box-shadow: 0 0 16px rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.8);
+  }
+}
+
+@media (min-width: 1200px) {
+  .shift-mini {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .shift-initials {
+    font-size: 10px;
   }
 }
 </style>

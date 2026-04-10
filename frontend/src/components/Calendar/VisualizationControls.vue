@@ -61,8 +61,6 @@
   </div>
 </template>
 
-
-
 <script>
 export default {
   name: 'VisualizationControls',
@@ -109,19 +107,16 @@ export default {
     },
     
     handlePrevious() {
-      // Отправляем событие с информацией о текущем виде
       this.$emit('previous', this.currentView)
       console.log(`← Назад: ${this.currentView}`)
     },
     
     handleNext() {
-      // Отправляем событие с информацией о текущем виде
       this.$emit('next', this.currentView)
       console.log(`→ Вперед: ${this.currentView}`)
     },
     
     handleToday() {
-      // Отправляем событие перехода к сегодня
       this.$emit('today')
       console.log(`📆 Переход к сегодня: ${this.currentView}`)
     },
@@ -134,17 +129,53 @@ export default {
 </script>
 
 <style scoped>
+/* CSS Variables для светлой и тёмной темы */
 .viz-controls {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  --controls-bg-start: #ffffff;
+  --controls-bg-end: #f8fafc;
+  --controls-border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --selector-bg: #f1f5f9;
+  --btn-bg: #ffffff;
+  --btn-hover: #10b981;
+  --btn-active: #059669;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --gradient-start: #6366f1;
+  --gradient-end: #8b5cf6;
+}
+
+@media (prefers-color-scheme: dark) {
+  .viz-controls {
+    --controls-bg-start: #1e293b;
+    --controls-bg-end: #0f172a;
+    --controls-border: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --selector-bg: #334155;
+    --btn-bg: #1e293b;
+    --btn-hover: #059669;
+    --btn-active: #047857;
+    --gradient-start: #818cf8;
+    --gradient-end: #a78bfa;
+  }
+}
+
+.viz-controls {
+  background: linear-gradient(135deg, var(--controls-bg-start) 0%, var(--controls-bg-end) 100%);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--controls-border);
 }
 
 .viz-controls:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .controls-header {
@@ -152,33 +183,33 @@ export default {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 16px;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
 }
 
-/* Селектор вида */
 .view-selector {
   display: flex;
-  gap: 8px;
-  background: #f1f3f5;
-  padding: 4px;
-  border-radius: 12px;
+  gap: 0.5rem;
+  background: var(--selector-bg);
+  padding: 0.25rem;
+  border-radius: 14px;
 }
 
 .view-selector button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 20px;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
   border: none;
   background: transparent;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
-  color: #6c757d;
+  font-weight: 600;
+  color: var(--text-secondary);
   position: relative;
   overflow: hidden;
+  font-size: 0.875rem;
 }
 
 .view-selector button::before {
@@ -189,9 +220,9 @@ export default {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(76, 175, 80, 0.2);
+  background: rgba(16, 185, 129, 0.2);
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition: width 0.5s, height 0.5s;
 }
 
 .view-selector button:hover::before {
@@ -200,55 +231,55 @@ export default {
 }
 
 .view-selector button:hover {
-  color: #495057;
-  background: rgba(76, 175, 80, 0.1);
+  color: var(--text-primary);
+  background: rgba(16, 185, 129, 0.1);
 }
 
 .view-selector button.active {
-  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  background: linear-gradient(135deg, var(--btn-hover) 0%, var(--btn-active) 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .view-icon {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .view-label {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
-/* Навигация */
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #f8f9fa;
-  padding: 4px 8px;
-  border-radius: 40px;
+  gap: 0.75rem;
+  background: var(--selector-bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: 50px;
 }
 
 .nav-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
   border: none;
-  background: white;
+  background: var(--btn-bg);
   cursor: pointer;
-  border-radius: 30px;
+  border-radius: 40px;
   transition: all 0.3s ease;
   font-weight: 500;
-  color: #495057;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.813rem;
 }
 
 .nav-btn:hover {
-  background: #4CAF50;
+  background: linear-gradient(135deg, var(--btn-hover) 0%, var(--btn-active) 100%);
   color: white;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .nav-btn:active {
@@ -256,34 +287,34 @@ export default {
 }
 
 .nav-icon {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .nav-label {
-  font-size: 13px;
+  font-size: 0.813rem;
 }
 
 .period-display {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 20px;
-  background: white;
-  border-radius: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--btn-bg);
+  border-radius: 40px;
+  box-shadow: var(--shadow-sm);
   min-width: 220px;
   justify-content: center;
+  border: 1px solid var(--controls-border);
 }
 
 .period-icon {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .current-period {
-  font-weight: 600;
-  font-size: 14px;
-  color: #2c3e50;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-weight: 700;
+  font-size: 0.875rem;
+  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -292,21 +323,23 @@ export default {
 .today-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
   color: white;
   cursor: pointer;
-  border-radius: 30px;
+  border-radius: 40px;
   transition: all 0.3s ease;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+  font-size: 0.813rem;
 }
 
 .today-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  filter: brightness(1.05);
 }
 
 .today-btn:active {
@@ -314,37 +347,37 @@ export default {
 }
 
 .today-icon {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .today-label {
-  font-size: 13px;
+  font-size: 0.813rem;
 }
 
-/* Селектор сотрудника */
 .employee-selector {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #e9ecef;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--controls-border);
   flex-wrap: wrap;
 }
 
 .selector-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  color: #495057;
+  gap: 0.375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
 }
 
 .label-icon {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .label-text {
-  font-size: 13px;
+  font-size: 0.813rem;
 }
 
 .select-wrapper {
@@ -355,35 +388,35 @@ export default {
 
 .select-wrapper select {
   width: 100%;
-  padding: 10px 36px 10px 14px;
-  border: 2px solid #e9ecef;
+  padding: 0.625rem 2.25rem 0.625rem 0.875rem;
+  border: 2px solid var(--controls-border);
   border-radius: 12px;
-  background: white;
+  background: var(--btn-bg);
   cursor: pointer;
-  font-size: 13px;
-  color: #2c3e50;
+  font-size: 0.813rem;
+  color: var(--text-primary);
   transition: all 0.3s ease;
   appearance: none;
   font-weight: 500;
 }
 
 .select-wrapper select:hover {
-  border-color: #4CAF50;
+  border-color: var(--btn-hover);
 }
 
 .select-wrapper select:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  border-color: var(--btn-hover);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .select-arrow {
   position: absolute;
-  right: 12px;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 10px;
-  color: #6c757d;
+  font-size: 0.625rem;
+  color: var(--text-secondary);
   pointer-events: none;
   transition: transform 0.3s ease;
 }
@@ -401,12 +434,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  background: #4CAF50;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: linear-gradient(135deg, var(--btn-hover) 0%, var(--btn-active) 100%);
   color: white;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: bold;
   animation: fadeInScale 0.3s ease;
 }
@@ -422,7 +455,6 @@ export default {
   }
 }
 
-/* Адаптивность */
 @media (max-width: 1024px) {
   .controls-header {
     flex-direction: column;
@@ -441,32 +473,32 @@ export default {
 
 @media (max-width: 768px) {
   .viz-controls {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .view-selector button {
-    padding: 6px 14px;
+    padding: 0.375rem 0.875rem;
   }
   
   .view-label {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   
   .nav-btn, .today-btn {
-    padding: 6px 12px;
+    padding: 0.375rem 0.75rem;
   }
   
   .nav-label, .today-label {
-    font-size: 11px;
+    font-size: 0.688rem;
   }
   
   .period-display {
     min-width: 180px;
-    padding: 6px 12px;
+    padding: 0.375rem 0.75rem;
   }
   
   .current-period {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   
   .select-wrapper {
@@ -474,15 +506,15 @@ export default {
   }
   
   .select-wrapper select {
-    padding: 8px 32px 8px 12px;
-    font-size: 12px;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
   .view-selector {
     flex-direction: column;
-    gap: 6px;
+    gap: 0.375rem;
   }
   
   .view-selector button {
@@ -513,18 +545,6 @@ export default {
   }
 }
 
-/* Анимации для кнопок */
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
 .view-selector button:active::after {
   content: '';
   position: absolute;
@@ -538,13 +558,22 @@ export default {
   pointer-events: none;
 }
 
-/* Стили для опций select */
-.select-wrapper select option {
-  padding: 10px;
-  font-size: 13px;
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
 
-/* Индикатор загрузки */
+.select-wrapper select option {
+  padding: 0.625rem;
+  font-size: 0.813rem;
+}
+
 .viz-controls.loading {
   position: relative;
   overflow: hidden;
@@ -557,7 +586,7 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
   animation: loading 1.5s ease infinite;
 }
 
@@ -567,6 +596,14 @@ export default {
   }
   100% {
     left: 100%;
+  }
+}
+
+@media print {
+  .viz-controls {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
   }
 }
 </style>

@@ -30,7 +30,7 @@
       >
         <span class="shift-name">{{ getShortName(shift.employeeName) }}</span>
         <span class="shift-time" v-if="shift.startTime !== 'Выходной'">
-          {{ getShortTime(shift.startTime) }}-{{ getShortTime(shift.endTime) }}
+          {{ getShortTime(shift.startTime) }}—{{ getShortTime(shift.endTime) }}
         </span>
       </div>
       
@@ -134,57 +134,109 @@ export default {
 </script>
 
 <style scoped>
+/* CSS Variables для светлой и тёмной темы */
 .day-cell {
-  min-height: 110px;
-  padding: 8px;
-  background: white;
-  border-right: 1px solid #e8e8e8;
-  border-bottom: 1px solid #e8e8e8;
+  --cell-bg: #ffffff;
+  --cell-border: #e2e8f0;
+  --cell-text: #0f172a;
+  --cell-text-secondary: #64748b;
+  --cell-hover-bg: #f8fafc;
+  --badge-bg: #10b981;
+  --badge-text: #ffffff;
+  --off-bg: #f1f5f9;
+  --off-border: #cbd5e1;
+  --night-bg: #e0e7ff;
+  --night-border: #818cf8;
+  --long-bg: #fef3c7;
+  --long-border: #f59e0b;
+  --more-bg: #f1f5f9;
+  --more-hover: #e2e8f0;
+  --no-shifts: #cbd5e1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-cell {
+    --cell-bg: #1e293b;
+    --cell-border: #334155;
+    --cell-text: #f1f5f9;
+    --cell-text-secondary: #94a3b8;
+    --cell-hover-bg: #334155;
+    --badge-bg: #059669;
+    --badge-text: #ffffff;
+    --off-bg: #334155;
+    --off-border: #475569;
+    --night-bg: #1e1b4b;
+    --night-border: #6366f1;
+    --long-bg: #78350f;
+    --long-border: #f59e0b;
+    --more-bg: #334155;
+    --more-hover: #475569;
+    --no-shifts: #475569;
+  }
+}
+
+.day-cell {
+  min-height: 120px;
+  padding: 10px;
+  background: var(--cell-bg);
+  border-right: 1px solid var(--cell-border);
+  border-bottom: 1px solid var(--cell-border);
   transition: all 0.2s ease;
   position: relative;
   cursor: pointer;
 }
 
 .day-cell:hover {
-  background: #fafbfc;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1;
+  background: var(--cell-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 2;
 }
 
 /* Ячейки других месяцев */
 .day-cell.other-month {
-  background: #fafafa;
-  color: #bdbdbd;
+  background: var(--cell-hover-bg);
+  opacity: 0.7;
 }
 
-.day-cell.other-month:hover {
-  background: #f5f5f5;
+.day-cell.other-month .day-number {
+  color: var(--cell-text-secondary);
 }
 
 /* Выходные дни */
 .day-cell.weekend {
-  background: #fffaf5;
+  background: linear-gradient(135deg, var(--cell-bg) 0%, rgba(245, 158, 11, 0.05) 100%);
 }
 
-.day-cell.weekend:hover {
-  background: #fff5eb;
+.day-cell.weekend .day-number {
+  color: #f59e0b;
 }
 
 /* Сегодняшний день */
 .day-cell.today {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border: 2px solid #2196F3;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border: 2px solid #6366f1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }
 
 .day-cell.today .day-number {
-  color: #1976d2;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-cell.today {
+    background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+  }
+  
+  .day-cell.today .day-number {
+    color: #a5b4fc;
+  }
 }
 
 /* Ячейки со сменами */
 .day-cell.has-shifts {
-  background: #f8fff8;
+  background: linear-gradient(135deg, var(--cell-bg) 0%, rgba(16, 185, 129, 0.03) 100%);
 }
 
 /* Заголовок дня */
@@ -192,99 +244,111 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .day-number {
   font-weight: 600;
-  font-size: 15px;
-  color: #2c3e50;
+  font-size: 0.9rem;
+  color: var(--cell-text);
   transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
 }
 
 .day-cell.today .day-number {
-  font-size: 17px;
-  font-weight: 700;
+  background: #4f46e5;
+  color: white;
 }
 
 .shifts-badge {
-  background: #4CAF50;
-  color: white;
-  font-size: 10px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 10px;
-  min-width: 20px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  min-width: 24px;
   text-align: center;
-}
-
-.day-cell.weekend .shifts-badge {
-  background: #ff9800;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Список смен */
 .day-shifts {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .day-shift {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  padding: 5px 8px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border-radius: 6px;
+  gap: 8px;
+  font-size: 0.7rem;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  border-left: 3px solid #10b981;
 }
 
-.day-shift::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #4CAF50;
+@media (prefers-color-scheme: dark) {
+  .day-shift {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  }
 }
 
 .day-shift:hover {
-  transform: translateX(2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Выходной день */
 .day-shift.day-off {
-  background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
-  color: #9e9e9e;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-left-color: #94a3b8;
 }
 
-.day-shift.day-off::before {
-  background: #9e9e9e;
+@media (prefers-color-scheme: dark) {
+  .day-shift.day-off {
+    background: linear-gradient(135deg, #334155 0%, #475569 100%);
+  }
+}
+
+.day-shift.day-off .shift-name {
+  color: var(--cell-text-secondary);
 }
 
 /* Ночная смена */
 .day-shift.night-shift {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-left-color: #6366f1;
 }
 
-.day-shift.night-shift::before {
-  background: #2196F3;
+@media (prefers-color-scheme: dark) {
+  .day-shift.night-shift {
+    background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%);
+  }
 }
 
 /* Длинная смена */
 .day-shift.long-shift {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-left-color: #f59e0b;
 }
 
-.day-shift.long-shift::before {
-  background: #ff9800;
+@media (prefers-color-scheme: dark) {
+  .day-shift.long-shift {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+  }
 }
 
 .shift-name {
@@ -293,38 +357,41 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--cell-text);
 }
 
 .shift-time {
-  font-size: 9px;
-  font-family: 'Courier New', monospace;
-  opacity: 0.8;
+  font-size: 0.6rem;
+  font-family: 'SF Mono', 'Courier New', monospace;
+  opacity: 0.7;
   white-space: nowrap;
+  color: var(--cell-text-secondary);
 }
 
 /* Кнопка "еще смены" */
 .more-shifts {
-  font-size: 10px;
-  padding: 4px 8px;
-  background: #f0f0f0;
-  border-radius: 6px;
+  font-size: 0.65rem;
+  padding: 5px 10px;
+  background: var(--more-bg);
+  border-radius: 10px;
   text-align: center;
-  color: #666;
+  color: var(--cell-text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
+  font-weight: 500;
 }
 
 .more-shifts:hover {
-  background: #e0e0e0;
+  background: var(--more-hover);
   transform: scale(1.02);
 }
 
 /* Нет смен */
 .no-shifts {
   text-align: center;
-  color: #e0e0e0;
-  font-size: 14px;
-  padding: 8px;
+  color: var(--no-shifts);
+  font-size: 1rem;
+  padding: 12px;
   font-weight: 300;
 }
 
@@ -336,7 +403,7 @@ export default {
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(-8px);
   }
   to {
     opacity: 1;
@@ -344,39 +411,59 @@ export default {
   }
 }
 
+/* Эффект при клике */
+.day-shift:active {
+  transform: scale(0.97);
+}
+
 /* Адаптивность */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .day-cell {
-    min-height: 80px;
-    padding: 4px;
-  }
-  
-  .day-number {
-    font-size: 12px;
+    min-height: 100px;
+    padding: 8px;
   }
   
   .day-shift {
-    font-size: 8px;
-    padding: 3px 5px;
+    font-size: 0.65rem;
+    padding: 5px 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .day-cell {
+    min-height: 80px;
+    padding: 6px;
+  }
+  
+  .day-number {
+    font-size: 0.8rem;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .day-shift {
+    font-size: 0.6rem;
+    padding: 4px 6px;
+    gap: 4px;
   }
   
   .shift-name {
-    font-size: 8px;
+    font-size: 0.6rem;
   }
   
   .shift-time {
-    font-size: 7px;
+    font-size: 0.55rem;
   }
   
   .more-shifts {
-    font-size: 8px;
-    padding: 2px 4px;
+    font-size: 0.6rem;
+    padding: 3px 6px;
   }
   
   .shifts-badge {
-    font-size: 8px;
-    padding: 1px 4px;
-    min-width: 16px;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    min-width: 20px;
   }
 }
 
@@ -384,22 +471,16 @@ export default {
   .day-shift {
     flex-direction: column;
     align-items: flex-start;
-    gap: 2px;
+    gap: 3px;
   }
   
   .shift-time {
-    font-size: 7px;
+    font-size: 0.5rem;
   }
-}
-
-/* Тултип при наведении */
-.day-shift[title] {
-  position: relative;
-}
-
-/* Эффект при клике */
-.day-shift:active {
-  transform: scale(0.98);
+  
+  .day-number {
+    font-size: 0.7rem;
+  }
 }
 
 /* Стили для печати */
@@ -407,11 +488,13 @@ export default {
   .day-cell {
     break-inside: avoid;
     page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
   }
   
   .day-shift {
-    background: #f0f0f0;
     print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }
 </style>

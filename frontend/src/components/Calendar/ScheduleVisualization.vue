@@ -192,55 +192,126 @@ export default {
 </script>
 
 <style scoped>
+/* CSS Variables для светлой и тёмной темы */
 .schedule-visualization {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 16px;
+  --viz-bg-start: #f8fafc;
+  --viz-bg-end: #e2e8f0;
+  --content-bg: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .schedule-visualization {
+    --viz-bg-start: #0f172a;
+    --viz-bg-end: #1e293b;
+    --content-bg: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --scrollbar-track: #1e293b;
+    --scrollbar-thumb: #475569;
+    --scrollbar-thumb-hover: #64748b;
+  }
+}
+
+.schedule-visualization {
+  background: linear-gradient(135deg, var(--viz-bg-start) 0%, var(--viz-bg-end) 100%);
+  border-radius: 28px;
   padding: 24px;
-  margin-top: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-top: 32px;
+  box-shadow: var(--shadow-lg);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .visualization-content {
-  background: white;
-  border-radius: 12px;
+  background: var(--content-bg);
+  border-radius: 20px;
   padding: 20px;
   margin-top: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
 }
 
 .visualization-content:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
+/* Адаптивность */
 @media (max-width: 768px) {
   .schedule-visualization {
     padding: 16px;
+    border-radius: 24px;
+    margin-top: 24px;
   }
   
   .visualization-content {
     padding: 12px;
-    overflow-x: auto;
+    border-radius: 16px;
   }
 }
 
+@media (max-width: 480px) {
+  .schedule-visualization {
+    padding: 12px;
+    border-radius: 20px;
+    margin-top: 20px;
+  }
+  
+  .visualization-content {
+    padding: 8px;
+    border-radius: 14px;
+  }
+}
+
+/* Кастомный скроллбар */
 .visualization-content::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 .visualization-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: var(--scrollbar-track);
+  border-radius: 10px;
 }
 
 .visualization-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  transition: background 0.2s ease;
 }
 
 .visualization-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Анимация появления контента */
+.visualization-content {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
