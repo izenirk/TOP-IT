@@ -1,9 +1,13 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+
+import ShiftForm from '../components/ShiftForm.vue'
+
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+
+    <ShiftForm />
+  
   </main>
 </template>
