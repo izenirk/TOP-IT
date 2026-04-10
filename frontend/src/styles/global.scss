@@ -1,0 +1,42 @@
+/* global.scss - Main global styles */
+
+@import './null.scss';
+@import './theme.scss';
+
+// Additional global styles
+#app {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+// Page transitions
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+// Responsive utilities
+@media (max-width: 768px) {
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    .hide-mobile {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .hide-phone {
+        display: none;
+    }
+}
