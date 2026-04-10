@@ -1,49 +1,9 @@
 <template>
     <div class="employees-table">
-        <h2>Список графиков</h2>
-        <div v-if="employeesList.length > 0">
-            <div v-for="alliance in uniqueAlliances" :key="alliance" class="alliance-section">
-                <table>
-                    <caption><strong>{{ alliance }}</strong></caption>
-                    <thead>
-                        <tr>
-                            <th>Группа</th>
-                            <th>Сотрудник</th>
-                            <th>Смены</th>
-                            <th>Макс. подряд</th>
-                            <th>% в будни</th>
-                            <th>% в выходные</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template v-for="group in getGroupsByAlliance(alliance)" :key="group">
-                            <tr class="group-separator">
-                                <td colspan="7"><strong>{{ group }}</strong></td>
-                            </tr>
-                            <tr v-for="employee in getEmployeesByGroup(alliance, group)" :key="employee.originalIndex">
-                                <td>{{ employee.group }}</td>
-                                <td>{{ employee.name }}</td>
-                                <td class="shifts-cell">
-                                    {{ formatShifts(employee.shifts) }}
-                                </td>
-                                <td :class="{ warning: employee.maxConsecutive > 6 }">
-                                    {{ employee.maxConsecutive }}
-                                </td>
-                                <td>{{ employee.metrics.weekdayPercentage }}%</td>
-                                <td>{{ employee.metrics.weekendPercentage }}%</td>
-                                <td class="actions-cell">
-                                    <button class="edit-btn" @click="showDetails(employee.originalIndex)" title="Редактировать">
-                                        ✏️
-                                    </button>
-                                    <button class="delete-btn" @click="confirmDeleteEmployee(employee.originalIndex, employee.name)" title="Удалить сотрудника">
-                                        🗑️
-                                    </button>
-                                </td>
-                            </tr>
-                        </template>
-                    </tbody>
-                </table>
+        <div class="table-header">
+            <h2>Список графиков</h2>
+            <div class="stats-badge">
+                📊 Всего сотрудников: {{ employeesList.length }}
             </div>
         </div>
         
@@ -110,6 +70,15 @@
                                         </div>
                                     </td>
                                     <td class="actions-cell">
+                                        <router-link 
+                                            :to="`/schedule/${employee.id}`" 
+                                            class="action-btn view-btn"
+                                            title="Посмотреть график">
+                                            <svg viewBox="0 0 24 24" fill="none">
+                                                <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                        </router-link>
                                         <button class="action-btn edit-btn" @click="showDetails(employee.originalIndex)" title="Редактировать">
                                             <svg viewBox="0 0 24 24" fill="none">
                                                 <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -131,17 +100,12 @@
         </div>
         
         <div v-else class="no-data">
-<<<<<<< Updated upstream
             <svg viewBox="0 0 24 24" fill="none">
                 <path d="M9 12H15M12 9V15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
             <p>Нет внесенных графиков</p>
             <span>Добавьте первого сотрудника</span>
-=======
-            <p>Нет внесенных графиков.</p>
-            <button @click="loadTestData" class="load-test-btn">Загрузить тестовые данные</button>
->>>>>>> Stashed changes
         </div>
     </div>
 </template>
@@ -172,13 +136,6 @@ export default {
         
         uniqueAlliances() {
             return [...new Set(this.employeesList.map(emp => emp.alliance))];
-        }
-    },
-    
-    mounted() {
-        // Если данных нет, загружаем тестовые
-        if (scheduleStore.employees.length === 0) {
-            scheduleStore.loadTestData()
         }
     },
     
@@ -215,13 +172,6 @@ export default {
             return `${shifts.slice(0, 2).map(s => s.date.slice(5)).join(', ')} +${shifts.length - 2}`;
         },
         
-        formatShifts(shifts) {
-            if (!shifts || shifts.length === 0) return 'Нет смен';
-            return shifts.map(s => 
-                `${s.date} (${s.startTime}${s.endTime ? '-' + s.endTime : ''})`
-            ).join('; ');
-        },
-        
         showDetails(index) {
             this.$emit('show-details', index);
         },
@@ -234,11 +184,6 @@ export default {
                     this.$emit('data-changed')
                 }
             );
-        },
-        
-        loadTestData() {
-            scheduleStore.loadTestData()
-            this.$emit('data-changed')
         }
     }
 }
@@ -263,6 +208,7 @@ export default {
     --percentage-bg: #e2e8f0;
     --percentage-fill: #10b981;
     --percentage-fill-weekend: #f59e0b;
+    --view-color: #3b82f6;
     --edit-color: #10b981;
     --edit-hover: #059669;
     --delete-color: #ef4444;
@@ -287,6 +233,7 @@ export default {
         --percentage-bg: #334155;
         --percentage-fill: #34d399;
         --percentage-fill-weekend: #fbbf24;
+        --view-color: #60a5fa;
         --edit-color: #34d399;
         --edit-hover: #6ee7b7;
         --delete-color: #f97316;
@@ -554,23 +501,31 @@ td {
     text-align: center;
 }
 
-.edit-btn, .delete-btn, .load-test-btn {
-    padding: 5px 10px;
+.action-btn {
+    padding: 8px;
     margin: 0 2px;
     border: none;
     cursor: pointer;
-    padding: 8px;
-    margin: 0 2px;
     border-radius: 12px;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    background: transparent;
 }
 
 .action-btn svg {
     width: 18px;
     height: 18px;
+}
+
+.view-btn {
+    color: var(--view-color);
+}
+
+.view-btn:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: scale(1.05);
 }
 
 .edit-btn {
@@ -589,24 +544,6 @@ td {
 .delete-btn:hover {
     background-color: rgba(239, 68, 68, 0.1);
     transform: scale(1.05);
-}
-
-.load-test-btn {
-    background-color: #2196F3;
-    color: white;
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
-
-.load-test-btn:hover {
-    background-color: #0b7dda;
-    transform: translateY(-1px);
-}
-
-.warning {
-    color: #ff9800;
-    font-weight: bold;
 }
 
 /* Пустое состояние */
@@ -634,6 +571,7 @@ td {
 }
 
 .no-data span {
+    display: block;
     font-size: 0.85rem;
     color: var(--table-text-secondary);
 }
@@ -650,6 +588,11 @@ td {
     
     .shifts-cell {
         max-width: 200px;
+    }
+    
+    .stats-badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
     }
 }
 </style>

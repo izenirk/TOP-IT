@@ -129,15 +129,14 @@ export default {
         // Подписываемся на изменения в store
         this.watchStoreChanges();
     },
-    beforeUnmount() {
-        // Восстанавливаем оригинальные методы при размонтировании
-        if (this.originalMethods) {
-            scheduleStore.addShift = this.originalMethods.addShift;
-            scheduleStore.deleteShift = this.originalMethods.deleteShift;
-            scheduleStore.deleteEmployee = this.originalMethods.deleteEmployee;
-            scheduleStore.loadTestData = this.originalMethods.loadTestData;
-        }
-    },
+beforeUnmount() {
+    // Восстанавливаем оригинальные методы при размонтировании
+    if (this.originalMethods) {
+        scheduleStore.addShift = this.originalMethods.addShift;
+        scheduleStore.deleteShift = this.originalMethods.deleteShift;
+        scheduleStore.deleteEmployee = this.originalMethods.deleteEmployee;
+    }
+},
     methods: {
         getInitials(name) {
             if (!name) return '?';
@@ -153,48 +152,41 @@ export default {
             this.employees = [...scheduleStore.employees];
         },
         
-        watchStoreChanges() {
-            // Создаем наблюдателя за изменениями в store
-            const updateEmployees = () => {
-                this.employees = [...scheduleStore.employees];
-            };
-            
-            // Сохраняем оригинальные методы
-            this.originalMethods = {
-                addShift: scheduleStore.addShift,
-                deleteShift: scheduleStore.deleteShift,
-                deleteEmployee: scheduleStore.deleteEmployee,
-                loadTestData: scheduleStore.loadTestData
-            };
-            
-            // Переопределяем методы с уведомлением об изменениях
-            scheduleStore.addShift = (...args) => {
-                const result = this.originalMethods.addShift.apply(scheduleStore, args);
-                updateEmployees();
-                return result;
-            };
-            
-            scheduleStore.deleteShift = (...args) => {
-                const result = this.originalMethods.deleteShift.apply(scheduleStore, args);
-                updateEmployees();
-                return result;
-            };
-            
-            scheduleStore.deleteEmployee = (...args) => {
-                const result = this.originalMethods.deleteEmployee.apply(scheduleStore, args);
-                updateEmployees();
-                return result;
-            };
-            
-            scheduleStore.loadTestData = (...args) => {
-                const result = this.originalMethods.loadTestData.apply(scheduleStore, args);
-                updateEmployees();
-                return result;
-            };
-            
-            // Начальная загрузка
-            updateEmployees();
-        },
+   watchStoreChanges() {
+    // Создаем наблюдателя за изменениями в store
+    const updateEmployees = () => {
+        this.employees = [...scheduleStore.employees];
+    };
+    
+    // Сохраняем оригинальные методы
+    this.originalMethods = {
+        addShift: scheduleStore.addShift,
+        deleteShift: scheduleStore.deleteShift,
+        deleteEmployee: scheduleStore.deleteEmployee
+    };
+    
+    // Переопределяем методы с уведомлением об изменениях
+    scheduleStore.addShift = (...args) => {
+        const result = this.originalMethods.addShift.apply(scheduleStore, args);
+        updateEmployees();
+        return result;
+    };
+    
+    scheduleStore.deleteShift = (...args) => {
+        const result = this.originalMethods.deleteShift.apply(scheduleStore, args);
+        updateEmployees();
+        return result;
+    };
+    
+    scheduleStore.deleteEmployee = (...args) => {
+        const result = this.originalMethods.deleteEmployee.apply(scheduleStore, args);
+        updateEmployees();
+        return result;
+    };
+    
+    // Начальная загрузка
+    updateEmployees();
+},
         
         handleShowDetails(index) {
             this.showEmployeeDetails(index);
