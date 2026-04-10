@@ -134,16 +134,18 @@ export default {
                 const check = checkConsecutiveShifts(employee, this.selectedDate);
                 
                 if (check.count > 6) {
-                    this.consecutiveWarning = `При добавлении этой смены будет ${check.count} смен подряд! Максимально допустимо - 6 смен.`;
+                    this.consecutiveWarning = `⚠️ При добавлении этой смены будет ${check.count} смен подряд! Максимально допустимо - 6 смен.`;
                     this.consecutiveWarningClass = 'warning';
                 } else if (check.count > 4) {
-                    this.consecutiveWarning = `${check.count} смен подряд. Осталось ${6 - check.count} до лимита.`;
-                    this.consecutiveWarningClass = 'alert';
+                    this.consecutiveWarning = `ℹ️ ${check.count} смен подряд. Осталось ${6 - check.count} до лимита.`;
+                    this.consecutiveWarningClass = 'info';
                 } else {
                     this.consecutiveWarning = '';
+                    this.consecutiveWarningClass = '';
                 }
             } else {
                 this.consecutiveWarning = '';
+                this.consecutiveWarningClass = '';
             }
         },
         
@@ -211,7 +213,7 @@ export default {
             
             if (existingEmployee) {
                 const consecutiveCheck = checkConsecutiveShifts(existingEmployee, this.selectedDate);
-                if (!consecutiveCheck.canAdd) {
+                if (consecutiveCheck.count > 6) {
                     scheduleStore.setError(`Невозможно добавить смену: будет ${consecutiveCheck.count} смен подряд! Максимум - 6.`);
                     return;
                 }
@@ -241,15 +243,20 @@ export default {
     --input-bg: #ffffff;
     --input-border: #cbd5e1;
     --input-focus: #4f46e5;
+    --input-focus-ring: rgba(79, 70, 229, 0.1);
     --badge-bg: #f1f5f9;
     --badge-text: #334155;
-    --alert-bg: #fef3c7;
-    --alert-text: #92400e;
-    --warning-bg: #fee2e2;
-    --warning-text: #dc2626;
+    --info-bg: #eff6ff;
+    --info-text: #1e40af;
+    --info-border: #3b82f6;
+    --warning-bg: #fef2f2;
+    --warning-text: #991b1b;
+    --warning-border: #ef4444;
     --submit-bg: #10b981;
     --submit-hover: #059669;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --submit-shadow: rgba(16, 185, 129, 0.3);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -258,25 +265,30 @@ export default {
         --form-border: #334155;
         --form-text: #f1f5f9;
         --form-label: #94a3b8;
-        --input-bg: #334155;
+        --input-bg: #0f172a;
         --input-border: #475569;
         --input-focus: #818cf8;
+        --input-focus-ring: rgba(129, 140, 248, 0.2);
         --badge-bg: #334155;
-        --badge-text: #cbd5e6;
-        --alert-bg: #78350f;
-        --alert-text: #fde68a;
+        --badge-text: #cbd5e1;
+        --info-bg: #1e3a8a;
+        --info-text: #bfdbfe;
+        --info-border: #3b82f6;
         --warning-bg: #7f1d1d;
-        --warning-text: #fca5a5;
+        --warning-text: #fecaca;
+        --warning-border: #ef4444;
         --submit-bg: #059669;
         --submit-hover: #10b981;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --submit-shadow: rgba(16, 185, 129, 0.4);
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 }
 
 .schedule-form {
     background-color: var(--form-bg);
-    border-radius: 24px;
-    padding: 28px;
+    border-radius: 20px;
+    padding: 24px;
     margin-bottom: 24px;
     border: 1px solid var(--form-border);
     box-shadow: var(--shadow);
@@ -284,9 +296,15 @@ export default {
     transition: all 0.2s ease;
 }
 
+.schedule-form:hover {
+    box-shadow: var(--shadow-lg);
+}
+
 /* Шапка формы */
 .form-header {
     margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--form-border);
 }
 
 .form-header h2 {
@@ -300,13 +318,18 @@ export default {
 .employee-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     background-color: var(--badge-bg);
     padding: 8px 16px;
     border-radius: 40px;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: var(--badge-text);
     flex-wrap: wrap;
+    transition: all 0.2s ease;
+}
+
+.employee-badge:hover {
+    transform: translateY(-1px);
 }
 
 .badge-icon {
@@ -315,6 +338,7 @@ export default {
 
 .badge-divider {
     opacity: 0.5;
+    font-size: 0.75rem;
 }
 
 /* Группа полей */
@@ -326,10 +350,10 @@ export default {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     color: var(--form-label);
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     letter-spacing: 0.3px;
 }
 
@@ -342,7 +366,7 @@ export default {
     width: 100%;
     padding: 12px 16px;
     border: 2px solid var(--input-border);
-    border-radius: 16px;
+    border-radius: 12px;
     font-size: 0.95rem;
     background-color: var(--input-bg);
     color: var(--form-text);
@@ -356,15 +380,20 @@ export default {
     background-size: 18px;
 }
 
+.form-group select:hover {
+    border-color: var(--input-focus);
+}
+
 .form-group select:focus {
     outline: none;
     border-color: var(--input-focus);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 0 0 3px var(--input-focus-ring);
 }
 
 .form-group select option {
     background-color: var(--input-bg);
     color: var(--form-text);
+    padding: 8px;
 }
 
 /* Две колонки для времени */
@@ -378,11 +407,24 @@ export default {
 .alert {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
-    border-radius: 16px;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
     margin-bottom: 20px;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .alert svg {
@@ -391,16 +433,16 @@ export default {
     flex-shrink: 0;
 }
 
-.alert.alert {
-    background-color: var(--alert-bg);
-    color: var(--alert-text);
-    border-left: 3px solid #f59e0b;
+.alert.info {
+    background-color: var(--info-bg);
+    color: var(--info-text);
+    border-left: 4px solid var(--info-border);
 }
 
 .alert.warning {
     background-color: var(--warning-bg);
     color: var(--warning-text);
-    border-left: 3px solid #ef4444;
+    border-left: 4px solid var(--warning-border);
 }
 
 /* Кнопка отправки */
@@ -412,7 +454,7 @@ export default {
     gap: 10px;
     background-color: var(--submit-bg);
     color: white;
-    padding: 14px 20px;
+    padding: 14px 24px;
     border: none;
     border-radius: 40px;
     cursor: pointer;
@@ -426,12 +468,17 @@ export default {
 .submit-btn svg {
     width: 20px;
     height: 20px;
+    transition: transform 0.2s ease;
 }
 
 .submit-btn:hover {
     background-color: var(--submit-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 6px 20px var(--submit-shadow);
+}
+
+.submit-btn:hover svg {
+    transform: scale(1.1);
 }
 
 .submit-btn:active {
@@ -439,24 +486,20 @@ export default {
 }
 
 /* Адаптивность */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .schedule-form {
         padding: 20px;
-        border-radius: 20px;
+        border-radius: 16px;
     }
     
     .form-header h2 {
         font-size: 1.3rem;
     }
     
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-    
     .employee-badge {
-        font-size: 0.75rem;
+        font-size: 0.8125rem;
         padding: 6px 12px;
+        gap: 6px;
     }
     
     .form-group select {
@@ -465,8 +508,74 @@ export default {
     }
     
     .submit-btn {
-        padding: 12px 16px;
+        padding: 12px 20px;
         font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .alert {
+        padding: 10px 14px;
+        font-size: 0.8125rem;
+    }
+    
+    .alert svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .schedule-form {
+        padding: 16px;
+        border-radius: 12px;
+    }
+    
+    .form-header {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+    }
+    
+    .form-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .employee-badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group label {
+        font-size: 0.8125rem;
+    }
+    
+    .form-group label svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .form-group select {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .submit-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+    
+    .submit-btn svg {
+        width: 18px;
+        height: 18px;
     }
 }
 </style>

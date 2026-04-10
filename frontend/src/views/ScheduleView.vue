@@ -119,6 +119,7 @@ export default {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
         if (!isLoggedIn) {
             this.$router.push('/');
+            return;
         }
         this.username = localStorage.getItem('username') || 'Пользователь';
         
@@ -128,12 +129,26 @@ export default {
         // Подписываемся на изменения в store
         this.watchStoreChanges();
     },
+    beforeUnmount() {
+        // Восстанавливаем оригинальные методы при размонтировании
+        if (this.originalMethods) {
+            scheduleStore.addShift = this.originalMethods.addShift;
+            scheduleStore.deleteShift = this.originalMethods.deleteShift;
+            scheduleStore.deleteEmployee = this.originalMethods.deleteEmployee;
+            scheduleStore.loadTestData = this.originalMethods.loadTestData;
+        }
+    },
     methods: {
-<<<<<<< Updated upstream
         getInitials(name) {
-            if (!name) return '👤'
-            return name.charAt(0).toUpperCase()
-=======
+            if (!name) return '?';
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2);
+        },
+        
         loadEmployees() {
             this.employees = [...scheduleStore.employees];
         },
@@ -145,25 +160,34 @@ export default {
             };
             
             // Сохраняем оригинальные методы
-            const originalAddShift = scheduleStore.addShift;
-            const originalDeleteShift = scheduleStore.deleteShift;
-            const originalDeleteEmployee = scheduleStore.deleteEmployee;
+            this.originalMethods = {
+                addShift: scheduleStore.addShift,
+                deleteShift: scheduleStore.deleteShift,
+                deleteEmployee: scheduleStore.deleteEmployee,
+                loadTestData: scheduleStore.loadTestData
+            };
             
             // Переопределяем методы с уведомлением об изменениях
             scheduleStore.addShift = (...args) => {
-                const result = originalAddShift.apply(scheduleStore, args);
+                const result = this.originalMethods.addShift.apply(scheduleStore, args);
                 updateEmployees();
                 return result;
             };
             
             scheduleStore.deleteShift = (...args) => {
-                const result = originalDeleteShift.apply(scheduleStore, args);
+                const result = this.originalMethods.deleteShift.apply(scheduleStore, args);
                 updateEmployees();
                 return result;
             };
             
             scheduleStore.deleteEmployee = (...args) => {
-                const result = originalDeleteEmployee.apply(scheduleStore, args);
+                const result = this.originalMethods.deleteEmployee.apply(scheduleStore, args);
+                updateEmployees();
+                return result;
+            };
+            
+            scheduleStore.loadTestData = (...args) => {
+                const result = this.originalMethods.loadTestData.apply(scheduleStore, args);
                 updateEmployees();
                 return result;
             };
@@ -186,7 +210,6 @@ export default {
         
         handlePeriodChange(date) {
             console.log('Period changed to:', date);
->>>>>>> Stashed changes
         },
         
         showEmployeeDetails(index) {
@@ -346,7 +369,6 @@ export default {
     border: none;
     border-radius: 40px;
     cursor: pointer;
-<<<<<<< Updated upstream
     font-size: 0.85rem;
     font-weight: 500;
     font-family: inherit;
@@ -356,9 +378,6 @@ export default {
 .logout-btn svg {
     width: 18px;
     height: 18px;
-=======
-    transition: background-color 0.3s;
->>>>>>> Stashed changes
 }
 
 .logout-btn:hover {

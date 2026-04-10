@@ -1,11 +1,5 @@
 <template>
     <div class="employees-table">
-<<<<<<< Updated upstream
-        <div class="table-header">
-            <h2>Список графиков</h2>
-            <div class="stats-badge" v-if="employeesList.length > 0">
-                {{ employeesList.length }} сотрудников
-=======
         <h2>Список графиков</h2>
         <div v-if="employeesList.length > 0">
             <div v-for="alliance in uniqueAlliances" :key="alliance" class="alliance-section">
@@ -50,7 +44,6 @@
                         </template>
                     </tbody>
                 </table>
->>>>>>> Stashed changes
             </div>
         </div>
         
@@ -561,14 +554,9 @@ td {
     text-align: center;
 }
 
-<<<<<<< Updated upstream
-.action-btn {
-    background: none;
-=======
 .edit-btn, .delete-btn, .load-test-btn {
     padding: 5px 10px;
     margin: 0 2px;
->>>>>>> Stashed changes
     border: none;
     cursor: pointer;
     padding: 8px;
@@ -603,12 +591,6 @@ td {
     transform: scale(1.05);
 }
 
-<<<<<<< Updated upstream
-@media (prefers-color-scheme: dark) {
-    .delete-btn:hover {
-        background-color: rgba(249, 115, 22, 0.15);
-    }
-=======
 .load-test-btn {
     background-color: #2196F3;
     color: white;
@@ -625,7 +607,6 @@ td {
 .warning {
     color: #ff9800;
     font-weight: bold;
->>>>>>> Stashed changes
 }
 
 /* Пустое состояние */
